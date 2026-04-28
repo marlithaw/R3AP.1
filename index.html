@@ -1,689 +1,755 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>R³.A.P. Response Studio</title>
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'brand-teal': '#0f5b5b',
-                        'brand-teal-light': '#187b7a',
-                        'brand-gold': '#c09e6c',
-                        'brand-gold-light': '#dfc59a',
-                        'brand-orange': '#f08a42',
-                        'studio-bg': '#f8f5ef',
-                        'live-bg': '#f9f9f7',
-                        'brand-dark': '#1a202c'
-                    },
-                    fontFamily: {
-                        sans: ['Montserrat', 'sans-serif'],
-                        serif: ['Playfair Display', 'serif'],
-                        live: ['Inter', 'sans-serif']
-                    },
-                    boxShadow: {
-                        'luxury': '0 10px 30px rgba(15, 91, 91, 0.08)',
-                        'glow-teal': '0 0 20px rgba(24, 123, 122, 0.2)',
-                    }
+
+```
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    'brand-teal': '#0f5b5b',
+                    'brand-teal-light': '#187b7a',
+                    'brand-gold': '#c09e6c',
+                    'brand-gold-light': '#dfc59a',
+                    'brand-orange': '#f08a42',
+                    'studio-bg': '#f8f5ef',
+                    'live-bg': '#f9f9f7',
+                    'brand-dark': '#1a202c'
+                },
+                fontFamily: {
+                    sans: ['Montserrat', 'sans-serif'],
+                    serif: ['Playfair Display', 'serif'],
+                    live: ['Inter', 'sans-serif']
+                },
+                boxShadow: {
+                    'luxury': '0 10px 30px rgba(15, 91, 91, 0.08)',
+                    'glow-teal': '0 0 20px rgba(24, 123, 122, 0.2)',
                 }
             }
         }
-    </script>
+    }
+</script>
+
+<style>
+    /* True App Baseline */
+    html, body {
+        margin: 0; padding: 0;
+        width: 100%; height: 100%;
+        overflow: hidden; 
+        background-color: #000; /* Dark background for the image borders */
+        -webkit-font-smoothing: antialiased;
+    }
+
+    /* App Container */
+    #app {
+        width: 100vw; height: 100vh;
+        height: 100dvh;
+        display: flex; flex-direction: column;
+        position: relative;
+        transition: background-color 0.3s ease;
+    }
+
+    /* Scrollable Content Area */
+    #screens-container {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+        scroll-behavior: smooth;
+        padding-bottom: 80px; /* Space for fixed bottom nav */
+    }
+
+    /* Safe area padding for mobile navigation */
+    .nav-safe-bottom {
+        padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+    }
+
+    .screen {
+        display: none; 
+        width: 100%; 
+        min-height: 100%;
+        animation: fadeIn 0.3s ease-out forwards;
+    }
+    .screen.active { display: block; }
     
-    <style>
-        /* True App Baseline */
-        html, body {
-            margin: 0; padding: 0;
-            width: 100%; height: 100%;
-            overflow: hidden; 
-            background-color: #000; /* Dark background for the image borders */
-            -webkit-font-smoothing: antialiased;
-        }
+    .studio-background {
+        background-color: #f8f5ef;
+        background-image: radial-gradient(circle at 50% 0%, #ffffff 0%, transparent 60%);
+    }
 
-        /* App Container */
-        #app {
-            width: 100vw; height: 100vh;
-            height: 100dvh;
-            display: flex; flex-direction: column;
-            position: relative;
-            transition: background-color 0.3s ease;
-        }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 
-        /* Scrollable Content Area */
+    /* Responsive Max-Width Wrapper for Content */
+    .content-wrapper {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 1.5rem;
+        width: 100%;
+    }
+
+    /* Typography & Utilities */
+    .font-serif { font-family: 'Playfair Display', serif; }
+    .icon-svg { stroke: currentColor; stroke-width: 1.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    
+    /* Custom UI Components */
+    .btn-luxury {
+        background: linear-gradient(90deg, #0f5b5b, #187b7a);
+        border: 1px solid #c09e6c; color: white;
+        box-shadow: 0 4px 15px rgba(15, 91, 91, 0.3); transition: all 0.2s ease;
+    }
+    .btn-luxury:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(15, 91, 91, 0.4); }
+    .btn-luxury:active { transform: scale(0.98); }
+    
+    .luxury-divider {
+        display: flex; align-items: center; justify-content: center; margin: 1rem 0; color: #c09e6c;
+    }
+    .luxury-divider::before, .luxury-divider::after {
+        content: ''; height: 1px; width: 30px; background-color: #c09e6c; margin: 0 10px;
+    }
+
+    /* Teacher Reset Animation */
+    .breathing-circle {
+        width: 200px; height: 200px; border-radius: 50%; border: 2px solid #0f5b5b;
+        background: rgba(15, 91, 91, 0.05); display: flex; align-items: center; justify-content: center;
+        animation: breathe 10s infinite ease-in-out; margin: 0 auto;
+    }
+    @keyframes breathe {
+        0% { transform: scale(1); opacity: 0.8; }
+        50% { transform: scale(1.5); opacity: 0.2; }
+        100% { transform: scale(1); opacity: 0.8; }
+    }
+
+    /* I to T Transformation */
+    .i-to-t-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 60px; }
+    .letter-top, .letter-bottom { height: 4px; background-color: #c09e6c; transition: all 0.8s ease; border-radius: 2px; }
+    .letter-stem { width: 4px; height: 35px; background-color: #c09e6c; border-radius: 2px; }
+    .letter-top { width: 16px; } .letter-bottom { width: 16px; opacity: 1; }
+    .transformed .letter-top { width: 44px; } .transformed .letter-bottom { width: 0px; opacity: 0; }
+
+    /* App Specific Utilities */
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+
+    /* Active Nav State */
+    .nav-btn-active { color: #0f5b5b !important; }
+    .nav-btn-active span { color: #0f5b5b !important; }
+    .nav-btn-active svg { stroke: #0f5b5b; }
+    .nav-btn-live-active .nav-live-disc { background: linear-gradient(135deg, #0f5b5b, #187b7a) !important; }
+
+    /* Desktop Layout: Sidebar at wide viewports */
+    @media (min-width: 900px) {
+        #app { flex-direction: row; }
         #screens-container {
             flex: 1;
-            overflow-y: auto;
-            overflow-x: hidden;
-            scroll-behavior: smooth;
-            padding-bottom: 80px; /* Space for fixed bottom nav */
+            padding-bottom: 0 !important;
         }
+        #main-nav {
+            position: relative !important;
+            bottom: auto !important;
+            left: auto !important;
+            width: 200px !important;
+            flex-direction: column !important;
+            justify-content: flex-start !important;
+            align-items: stretch !important;
+            border-top: none !important;
+            border-right: 1px solid rgba(192, 158, 108, 0.2) !important;
+            padding: 2rem 0.75rem !important;
+            height: 100vh !important;
+            overflow-y: auto !important;
+            order: -1;
+            box-shadow: 5px 0 20px rgba(0,0,0,0.04) !important;
+        }
+        #main-nav .nav-desktop-logo {
+            display: block !important;
+        }
+        #main-nav button {
+            flex-direction: row !important;
+            justify-content: flex-start !important;
+            padding: 0.75rem 1rem !important;
+            border-radius: 0.75rem !important;
+            margin-bottom: 0.25rem !important;
+            transform: none !important;
+            gap: 0.75rem;
+        }
+        #main-nav button svg { width: 1.1rem !important; height: 1.1rem !important; margin-bottom: 0 !important; }
+        #main-nav button span { font-size: 0.7rem !important; }
+        #main-nav .nav-live-disc {
+            width: 2rem !important; height: 2rem !important;
+            padding: 0.4rem !important;
+        }
+        #main-nav .nav-live-disc svg { width: 0.9rem !important; height: 0.9rem !important; }
+    }
+    .nav-desktop-logo { display: none; }
 
-        /* Safe area padding for mobile navigation */
-        .nav-safe-bottom {
-            padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
-        }
+    /* Pulse Hitbox Animation for interactive images */
+    .pulse-hitbox {
+        animation: pulse-glow 2.5s infinite;
+    }
 
-        .screen {
-            display: none; 
-            width: 100%; 
-            min-height: 100%;
-            animation: fadeIn 0.3s ease-out forwards;
-        }
-        .screen.active { display: block; }
-        
-        .studio-background {
-            background-color: #f8f5ef;
-            background-image: radial-gradient(circle at 50% 0%, #ffffff 0%, transparent 60%);
-        }
+    /* Floating Regulate Button */
+    #regulate-btn {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        z-index: 150;
+        display: none;
+        background: white;
+        border: 1.5px solid rgba(15, 91, 91, 0.25);
+        border-radius: 50px;
+        padding: 0.4rem 0.85rem 0.4rem 0.6rem;
+        box-shadow: 0 4px 16px rgba(15,91,91,0.12);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #0f5b5b;
+        align-items: center;
+        gap: 0.4rem;
+    }
+    #regulate-btn:hover { background: #0f5b5b; color: white; border-color: #0f5b5b; }
+    #regulate-btn .reg-dot {
+        width: 8px; height: 8px; border-radius: 50%;
+        background: #0f5b5b;
+        animation: reg-pulse 2s infinite;
+        flex-shrink: 0;
+        transition: background 0.2s;
+    }
+    #regulate-btn:hover .reg-dot { background: white; }
+    @keyframes reg-pulse {
+        0% { box-shadow: 0 0 0 0 rgba(15,91,91,0.4); }
+        70% { box-shadow: 0 0 0 6px rgba(15,91,91,0); }
+        100% { box-shadow: 0 0 0 0 rgba(15,91,91,0); }
+    }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    /* R3 Reset screen styling */
+    .r3-step { transition: all 0.2s; }
+    .r3-step:hover { transform: translateY(-2px); }
+    @keyframes pulse-glow {
+        0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.5); }
+        70% { box-shadow: 0 0 0 12px rgba(255, 255, 255, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+    }
+</style>
+```
 
-        /* Responsive Max-Width Wrapper for Content */
-        .content-wrapper {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 1.5rem;
-            width: 100%;
-        }
-
-        /* Typography & Utilities */
-        .font-serif { font-family: 'Playfair Display', serif; }
-        .icon-svg { stroke: currentColor; stroke-width: 1.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-        
-        /* Custom UI Components */
-        .btn-luxury {
-            background: linear-gradient(90deg, #0f5b5b, #187b7a);
-            border: 1px solid #c09e6c; color: white;
-            box-shadow: 0 4px 15px rgba(15, 91, 91, 0.3); transition: all 0.2s ease;
-        }
-        .btn-luxury:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(15, 91, 91, 0.4); }
-        .btn-luxury:active { transform: scale(0.98); }
-        
-        .luxury-divider {
-            display: flex; align-items: center; justify-content: center; margin: 1rem 0; color: #c09e6c;
-        }
-        .luxury-divider::before, .luxury-divider::after {
-            content: ''; height: 1px; width: 30px; background-color: #c09e6c; margin: 0 10px;
-        }
-
-        /* Teacher Reset Animation */
-        .breathing-circle {
-            width: 200px; height: 200px; border-radius: 50%; border: 2px solid #0f5b5b;
-            background: rgba(15, 91, 91, 0.05); display: flex; align-items: center; justify-content: center;
-            animation: breathe 10s infinite ease-in-out; margin: 0 auto;
-        }
-        @keyframes breathe {
-            0% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.5); opacity: 0.2; }
-            100% { transform: scale(1); opacity: 0.8; }
-        }
-
-        /* I to T Transformation */
-        .i-to-t-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 60px; }
-        .letter-top, .letter-bottom { height: 4px; background-color: #c09e6c; transition: all 0.8s ease; border-radius: 2px; }
-        .letter-stem { width: 4px; height: 35px; background-color: #c09e6c; border-radius: 2px; }
-        .letter-top { width: 16px; } .letter-bottom { width: 16px; opacity: 1; }
-        .transformed .letter-top { width: 44px; } .transformed .letter-bottom { width: 0px; opacity: 0; }
-
-        /* App Specific Utilities */
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-
-        /* Active Nav State */
-        .nav-btn-active { color: #0f5b5b !important; }
-        .nav-btn-active span { color: #0f5b5b !important; }
-        .nav-btn-active svg { stroke: #0f5b5b; }
-        .nav-btn-live-active .nav-live-disc { background: linear-gradient(135deg, #0f5b5b, #187b7a) !important; }
-
-        /* Desktop Layout: Sidebar at wide viewports */
-        @media (min-width: 900px) {
-            #app { flex-direction: row; }
-            #screens-container {
-                flex: 1;
-                padding-bottom: 0 !important;
-            }
-            #main-nav {
-                position: relative !important;
-                bottom: auto !important;
-                left: auto !important;
-                width: 200px !important;
-                flex-direction: column !important;
-                justify-content: flex-start !important;
-                align-items: stretch !important;
-                border-top: none !important;
-                border-right: 1px solid rgba(192, 158, 108, 0.2) !important;
-                padding: 2rem 0.75rem !important;
-                height: 100vh !important;
-                overflow-y: auto !important;
-                order: -1;
-                box-shadow: 5px 0 20px rgba(0,0,0,0.04) !important;
-            }
-            #main-nav .nav-desktop-logo {
-                display: block !important;
-            }
-            #main-nav button {
-                flex-direction: row !important;
-                justify-content: flex-start !important;
-                padding: 0.75rem 1rem !important;
-                border-radius: 0.75rem !important;
-                margin-bottom: 0.25rem !important;
-                transform: none !important;
-                gap: 0.75rem;
-            }
-            #main-nav button svg { width: 1.1rem !important; height: 1.1rem !important; margin-bottom: 0 !important; }
-            #main-nav button span { font-size: 0.7rem !important; }
-            #main-nav .nav-live-disc {
-                width: 2rem !important; height: 2rem !important;
-                padding: 0.4rem !important;
-            }
-            #main-nav .nav-live-disc svg { width: 0.9rem !important; height: 0.9rem !important; }
-        }
-        .nav-desktop-logo { display: none; }
-
-        /* Pulse Hitbox Animation for interactive images */
-        .pulse-hitbox {
-            animation: pulse-glow 2.5s infinite;
-        }
-        @keyframes pulse-glow {
-            0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.5); }
-            70% { box-shadow: 0 0 0 12px rgba(255, 255, 255, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
-        }
-    </style>
 </head>
 <body>
 
 <div id="app">
+
+```
+<!-- MAIN SCROLLABLE AREA -->
+<div id="screens-container">
     
-    <!-- MAIN SCROLLABLE AREA -->
-    <div id="screens-container">
+    <!-- ==========================================
+         SCREEN: SPLASH / WELCOME 
+         ========================================== -->
+    <div id="screen-splash" class="screen active cursor-pointer relative bg-[#f8f5ef]" onclick="navTo('screen-dashboard')">
+        <img src="Welcome%20Screen.png" onerror="this.onerror=null; this.src='https://placehold.co/800x1600/f8f5ef/0f5b5b?text=Welcome+Screen\n(Image+Not+Found)';" class="absolute inset-0 w-full h-full object-contain object-center pointer-events-none" alt="Welcome to RAP">
         
-        <!-- ==========================================
-             SCREEN: SPLASH / WELCOME 
-             ========================================== -->
-        <div id="screen-splash" class="screen active cursor-pointer relative bg-[#f8f5ef]" onclick="navTo('screen-dashboard')">
-            <!-- Fixed src with URL encoded spaces (%20) and a fallback onerror to a styled placeholder -->
-            <img src="Welcome%20Screen.png" onerror="this.onerror=null; this.src='https://placehold.co/800x1600/f8f5ef/0f5b5b?text=Welcome+Screen\n(Image+Not+Found)';" class="absolute inset-0 w-full h-full object-contain object-center pointer-events-none" alt="Welcome to RAP">
-            
-            <!-- Dynamic Name Overlay to fill the empty gap -->
-            <div class="absolute w-full top-[65.5%] sm:top-[66%] left-1/2 transform -translate-x-1/2 text-center pointer-events-none z-10">
-                <p class="font-serif text-3xl md:text-4xl font-bold tracking-wide drop-shadow-sm" style="color: #b37d4c;">Educator</p>
-            </div>
-
-            <!-- Pulse Hitbox indicating where to tap -->
-            <div class="absolute w-[80%] max-w-[300px] h-[8%] bottom-[12%] left-1/2 transform -translate-x-1/2 rounded-[2rem] pulse-hitbox border-2 border-[#0f5b5b]/30 pointer-events-none z-20"></div>
+        <!-- "Educator" fills the blank in the image — positioned BELOW "It's time for a remix." text -->
+        <div class="absolute w-full top-[71%] sm:top-[72%] left-1/2 transform -translate-x-1/2 text-center pointer-events-none z-10">
+            <p class="font-serif text-3xl md:text-4xl font-bold tracking-wide drop-shadow-sm" style="color: #b37d4c;">Educator</p>
         </div>
 
-        <!-- ==========================================
-             SCREEN: HOME / DASHBOARD 
-             ========================================== -->
-        <div id="screen-dashboard" class="screen studio-background">
-            <div class="content-wrapper">
-                <div class="text-center mb-8 pt-6">
-                    <h1 class="font-serif text-3xl font-bold text-brand-teal tracking-wide">R³.A.P. Response Studio</h1>
-                    <p class="text-sm text-gray-600 mt-2 max-w-xl mx-auto">A teacher-facing response system that reduces improvisation in high-stress classroom moments.</p>
-                    <div class="luxury-divider mt-4">
-                        <span class="text-[9px] tracking-[0.2em] font-bold text-brand-teal uppercase">Master Your Freestyle</span>
-                    </div>
-                </div>
-
-                <!-- Start Here Flow -->
-                <div class="mb-6">
-                    <p class="text-[9px] tracking-[0.18em] font-bold text-brand-gold uppercase mb-3">Start Here — Your Flow</p>
-                    <div class="grid grid-cols-4 gap-2">
-                        <button onclick="navTo('screen-library')" class="bg-white border border-brand-gold/30 rounded-xl p-3 text-center hover:border-brand-teal hover:shadow-sm transition">
-                            <p class="font-serif font-bold text-brand-teal text-base leading-none mb-1">01</p>
-                            <p class="text-[9px] font-bold uppercase tracking-wider text-gray-500">Library</p>
-                            <p class="text-[8px] text-gray-400 mt-0.5 leading-tight">Learn the<br>routine</p>
-                        </button>
-                        <button onclick="navTo('screen-practice-intro')" class="bg-white border border-brand-gold/30 rounded-xl p-3 text-center hover:border-brand-teal hover:shadow-sm transition">
-                            <p class="font-serif font-bold text-brand-teal text-base leading-none mb-1">02</p>
-                            <p class="text-[9px] font-bold uppercase tracking-wider text-gray-500">Practice</p>
-                            <p class="text-[8px] text-gray-400 mt-0.5 leading-tight">Rehearse<br>the script</p>
-                        </button>
-                        <button onclick="startLiveState()" class="bg-brand-orange/10 border border-brand-orange/30 rounded-xl p-3 text-center hover:border-brand-orange hover:shadow-sm transition">
-                            <p class="font-serif font-bold text-brand-orange text-base leading-none mb-1">03</p>
-                            <p class="text-[9px] font-bold uppercase tracking-wider text-brand-orange">Live</p>
-                            <p class="text-[8px] text-gray-400 mt-0.5 leading-tight">Deploy<br>in class</p>
-                        </button>
-                        <button onclick="navTo('screen-reflect')" class="bg-white border border-brand-gold/30 rounded-xl p-3 text-center hover:border-brand-teal hover:shadow-sm transition">
-                            <p class="font-serif font-bold text-brand-teal text-base leading-none mb-1">04</p>
-                            <p class="text-[9px] font-bold uppercase tracking-wider text-gray-500">Track</p>
-                            <p class="text-[8px] text-gray-400 mt-0.5 leading-tight">Reflect<br>& export</p>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Status Bar -->
-                <div class="bg-white rounded-xl p-4 shadow-sm border border-brand-gold/30 mb-6 flex justify-between items-center text-sm font-medium text-brand-dark">
-                    <button onclick="showNotification('Grade Band settings coming in the next release.')" class="flex items-center hover:text-brand-teal transition group">
-                        <span class="w-2 h-2 rounded-full bg-brand-teal mr-2"></span>
-                        Grade Band: K-8
-                        <svg class="w-3 h-3 ml-1 text-brand-gold opacity-60 group-hover:opacity-100 transition" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-                    </button>
-                    <button onclick="showNotification('Studio mode settings coming in the next release.')" class="text-brand-gold hover:opacity-70 transition flex items-center gap-1">
-                        Status: Studio Active
-                        <svg class="w-3 h-3 opacity-60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-                    </button>
-                </div>
-
-                <!-- The Studio Toolkit Banner -->
-                <div class="mb-4">
-                    <button onclick="navTo('screen-toolkit')" class="w-full bg-brand-dark text-white rounded-2xl p-6 shadow-luxury flex items-center justify-between group hover:bg-gray-800 transition text-left">
-                        <div>
-                            <p class="text-xs text-brand-gold uppercase tracking-widest font-bold mb-1">The Studio Toolkit</p>
-                            <h3 class="font-serif text-2xl font-bold">5 Stages of Escalation</h3>
-                        </div>
-                        <div class="bg-white/10 p-3 rounded-full group-hover:scale-110 transition">
-                            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
-                        </div>
-                    </button>
-                </div>
-
-                <!-- Dashboard Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <button onclick="navTo('screen-library')" class="bg-gradient-to-r from-brand-orange to-[#e56a17] text-white rounded-2xl p-6 shadow-luxury flex items-center justify-between group hover:opacity-95 transition text-left">
-                        <div>
-                            <h3 class="font-serif text-2xl font-bold mb-1">Use It Live</h3>
-                            <p class="text-xs text-white/80 uppercase tracking-wider font-bold">Select a Script</p>
-                        </div>
-                        <div class="bg-white/20 p-3 rounded-full group-hover:scale-110 transition"><svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
-                    </button>
-
-                    <button onclick="navTo('screen-library')" class="bg-white border border-brand-gold/30 rounded-2xl p-6 shadow-luxury flex items-center justify-between group hover:border-brand-teal transition text-left">
-                        <div>
-                            <h3 class="font-serif text-xl font-bold text-brand-teal mb-1">Module Library</h3>
-                            <p class="text-xs text-gray-500 uppercase tracking-wider font-bold">Teach a Routine</p>
-                        </div>
-                        <div class="text-brand-teal bg-brand-cream p-3 rounded-full"><svg class="w-5 h-5 icon-svg" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg></div>
-                    </button>
-
-                    <!-- Navigates to Intro Image before Practice -->
-                    <button onclick="navTo('screen-practice-intro')" class="bg-white border border-brand-gold/30 rounded-2xl p-6 shadow-luxury flex items-center justify-between group hover:border-brand-teal transition text-left">
-                        <div>
-                            <h3 class="font-serif text-xl font-bold text-brand-teal mb-1">Practice Scenarios</h3>
-                            <p class="text-xs text-gray-500 uppercase tracking-wider font-bold">Rehearse</p>
-                        </div>
-                        <div class="text-brand-teal bg-brand-cream p-3 rounded-full"><svg class="w-5 h-5 icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div>
-                    </button>
-
-                    <button onclick="navTo('screen-reflect')" class="bg-white border border-brand-gold/30 rounded-2xl p-6 shadow-luxury flex items-center justify-between group hover:border-brand-teal transition text-left">
-                        <div>
-                            <h3 class="font-serif text-xl font-bold text-brand-teal mb-1">Track & Reflect</h3>
-                            <p class="text-xs text-gray-500 uppercase tracking-wider font-bold">Export PDF Report</p>
-                        </div>
-                        <div class="text-brand-teal bg-brand-cream p-3 rounded-full"><svg class="w-5 h-5 icon-svg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg></div>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- ==========================================
-             SCREEN: THE STUDIO TOOLKIT
-             ========================================== -->
-        <div id="screen-toolkit" class="screen studio-background">
-            <div class="content-wrapper">
-                <button onclick="navTo('screen-dashboard')" class="flex items-center text-brand-teal mb-6 font-medium hover:opacity-80 transition">
-                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-                    <span class="ml-2">Back to Studio</span>
-                </button>
-                
-                <div class="text-center mb-10">
-                    <p class="text-xs tracking-[0.2em] font-bold text-brand-gold uppercase mb-2">The Studio Toolkit</p>
-                    <h2 class="font-serif text-3xl md:text-4xl font-bold text-brand-teal leading-tight mb-6">De-Escalation Stages</h2>
-                    
-                    <div class="bg-brand-dark rounded-xl p-5 md:p-6 text-left shadow-luxury border border-brand-gold/20">
-                        <p class="text-sm md:text-base text-brand-gold-light italic font-medium">"Because a dysregulated adult cannot help regulate a child, teachers need automatic, predictable responses."</p>
-                        <p class="text-xs text-white/70 mt-3 leading-relaxed">Master the 5 stages of a behavioral crisis so you never have to improvise when the volume goes up.</p>
-                    </div>
-                </div>
-
-                <div class="space-y-8">
-                    
-                    <!-- Phase 1 -->
-                    <div>
-                        <div class="flex items-center mb-4">
-                            <span class="bg-brand-teal text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-3 flex-shrink-0 shadow-md">1</span>
-                            <h3 class="font-serif font-bold text-2xl text-brand-teal">The Trigger Phase</h3>
-                        </div>
-                        <p class="text-sm text-gray-600 mb-4 pl-11 font-medium">Students send subtle warning signals that they are becoming overwhelmed, such as sighing, clenching fists, or lingering.</p>
-                        
-                        <div class="space-y-4 pl-11">
-                            <div>
-                                <div class="bg-gray-100 p-4 rounded-t-xl border border-gray-200 border-b-0">
-                                    <span class="text-gray-500 font-bold block mb-1 text-[10px] uppercase tracking-widest">When you see:</span>
-                                    <span class="text-brand-dark font-medium text-sm">A student showing early signs of frustration or refusing to transition...</span>
-                                </div>
-                                <div class="bg-brand-cream p-4 rounded-b-xl border border-brand-gold/30">
-                                    <span class="text-brand-teal font-bold block mb-1 text-[10px] uppercase tracking-widest">The Studio Response:</span>
-                                    <span class="text-brand-dark text-sm">Intervene early and low-key. Acknowledge the challenge and offer a brief regulation break <em>(e.g., "I can see it's hard to switch gears. Take a minute to get a drink of water, then we'll get started.")</em></span>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="bg-gray-100 p-4 rounded-t-xl border border-gray-200 border-b-0">
-                                    <span class="text-gray-500 font-bold block mb-1 text-[10px] uppercase tracking-widest">When you see:</span>
-                                    <span class="text-brand-dark font-medium text-sm">Minor, low-level disruptions (tapping, whispering)...</span>
-                                </div>
-                                <div class="bg-brand-cream p-4 rounded-b-xl border border-brand-gold/30">
-                                    <span class="text-brand-teal font-bold block mb-1 text-[10px] uppercase tracking-widest">The Studio Response:</span>
-                                    <span class="text-brand-dark text-sm">Use "strategic ignoring" for behaviors that don't impact safety, or use proximity (standing near the student) to redirect them without a verbal reprimand.</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Phase 2 -->
-                    <div>
-                        <div class="flex items-center mb-4">
-                            <span class="bg-brand-teal text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-3 flex-shrink-0 shadow-md">2</span>
-                            <h3 class="font-serif font-bold text-2xl text-brand-teal">The Agitation Phase</h3>
-                        </div>
-                        <p class="text-sm text-gray-600 mb-4 pl-11 font-medium">If the trigger isn't addressed, the student may push back, argue slightly, or slam materials.</p>
-                        
-                        <div class="space-y-4 pl-11">
-                            <div>
-                                <div class="bg-gray-100 p-4 rounded-t-xl border border-gray-200 border-b-0">
-                                    <span class="text-gray-500 font-bold block mb-1 text-[10px] uppercase tracking-widest">When you see:</span>
-                                    <span class="text-brand-dark font-medium text-sm">A student begins to argue or challenge your authority...</span>
-                                </div>
-                                <div class="bg-brand-cream p-4 rounded-b-xl border border-brand-gold/30">
-                                    <span class="text-brand-teal font-bold block mb-1 text-[10px] uppercase tracking-widest">The Studio Response:</span>
-                                    <span class="text-brand-dark text-sm">Drop your volume, slow your pace, and completely avoid power struggles.</span>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="bg-gray-100 p-4 rounded-t-xl border border-gray-200 border-b-0">
-                                    <span class="text-gray-500 font-bold block mb-1 text-[10px] uppercase tracking-widest">When you see:</span>
-                                    <span class="text-brand-dark font-medium text-sm">The student expressing anger or defiance...</span>
-                                </div>
-                                <div class="bg-brand-cream p-4 rounded-b-xl border border-brand-gold/30">
-                                    <span class="text-brand-teal font-bold block mb-1 text-[10px] uppercase tracking-widest">The Studio Response:</span>
-                                    <span class="text-brand-dark text-sm">Validate feelings without validating the behavior. Use empathy <em>("I see you're frustrated")</em> and offer 2-3 acceptable choices <em>("You can complete this independently or with a partner. Which do you prefer?")</em>.</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Phase 3 -->
-                    <div>
-                        <div class="flex items-center mb-4">
-                            <span class="bg-[#e56a17] text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-3 flex-shrink-0 shadow-md">3</span>
-                            <h3 class="font-serif font-bold text-2xl text-[#e56a17]">The Acceleration Phase</h3>
-                        </div>
-                        <p class="text-sm text-gray-600 mb-4 pl-11 font-medium">The student becomes louder, paces, or blatantly refuses. Reasoning is no longer effective.</p>
-                        
-                        <div class="space-y-4 pl-11">
-                            <div>
-                                <div class="bg-orange-50 p-4 rounded-t-xl border border-orange-100 border-b-0">
-                                    <span class="text-brand-orange font-bold block mb-1 text-[10px] uppercase tracking-widest">When you see:</span>
-                                    <span class="text-brand-dark font-medium text-sm">The student is highly agitated and raising their voice...</span>
-                                </div>
-                                <div class="bg-brand-cream p-4 rounded-b-xl border border-brand-gold/30">
-                                    <span class="text-brand-teal font-bold block mb-1 text-[10px] uppercase tracking-widest">The Studio Response:</span>
-                                    <span class="text-brand-dark text-sm">Use significantly fewer words and maintain a calm, monotonous tone. Do not ask "Why?" questions or deliver lectures.</span>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="bg-orange-50 p-4 rounded-t-xl border border-orange-100 border-b-0">
-                                    <span class="text-brand-orange font-bold block mb-1 text-[10px] uppercase tracking-widest">When you see:</span>
-                                    <span class="text-brand-dark font-medium text-sm">Verbal directions are causing more pushback...</span>
-                                </div>
-                                <div class="bg-brand-cream p-4 rounded-b-xl border border-brand-gold/30">
-                                    <span class="text-brand-teal font-bold block mb-1 text-[10px] uppercase tracking-widest">The Studio Response:</span>
-                                    <span class="text-brand-dark text-sm">Lean on non-verbal cues. Quietly point to a "Take a Break" card or gesture toward a calm space to reduce cognitive demand.</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Phase 4 -->
-                    <div>
-                        <div class="flex items-center mb-4">
-                            <span class="bg-red-700 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-3 flex-shrink-0 shadow-md">4</span>
-                            <h3 class="font-serif font-bold text-2xl text-red-700">The Crisis Phase</h3>
-                        </div>
-                        <p class="text-sm text-gray-600 mb-4 pl-11 font-medium">Peak escalation. Unsafe behavior or extreme disruption. Safety is the only priority.</p>
-                        
-                        <div class="space-y-4 pl-11">
-                            <div>
-                                <div class="bg-red-50 p-4 rounded-t-xl border border-red-100 border-b-0">
-                                    <span class="text-red-700 font-bold block mb-1 text-[10px] uppercase tracking-widest">When you see:</span>
-                                    <span class="text-brand-dark font-medium text-sm">The student becomes unsafe or highly disruptive...</span>
-                                </div>
-                                <div class="bg-brand-cream p-4 rounded-b-xl border border-brand-gold/30">
-                                    <span class="text-brand-teal font-bold block mb-1 text-[10px] uppercase tracking-widest">The Studio Response:</span>
-                                    <span class="text-brand-dark text-sm">Stop teaching. Follow district safety protocols (call an admin, give space, or escort others out).</span>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="bg-red-50 p-4 rounded-t-xl border border-red-100 border-b-0">
-                                    <span class="text-red-700 font-bold block mb-1 text-[10px] uppercase tracking-widest">When you see:</span>
-                                    <span class="text-brand-dark font-medium text-sm">You must interact during the crisis...</span>
-                                </div>
-                                <div class="bg-brand-cream p-4 rounded-b-xl border border-brand-gold/30">
-                                    <span class="text-brand-teal font-bold block mb-1 text-[10px] uppercase tracking-widest">The Studio Response:</span>
-                                    <span class="text-brand-dark text-sm">Use the absolute minimum number of words possible <em>(e.g., "I am here when you are ready")</em>.</span>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="bg-red-50 p-4 rounded-t-xl border border-red-100 border-b-0">
-                                    <span class="text-red-700 font-bold block mb-1 text-[10px] uppercase tracking-widest">When you feel:</span>
-                                    <span class="text-brand-dark font-medium text-sm">Your own heart racing and anxiety rising...</span>
-                                </div>
-                                <div class="bg-brand-cream p-4 rounded-b-xl border border-brand-gold/30">
-                                    <span class="text-brand-teal font-bold block mb-1 text-[10px] uppercase tracking-widest">The Studio Response:</span>
-                                    <span class="text-brand-dark text-sm">Step back and take 3 deep breaths. Your panic will only escalate their aggression.</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Phase 5 -->
-                    <div>
-                        <div class="flex items-center mb-4">
-                            <span class="bg-brand-teal text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-3 flex-shrink-0 shadow-md">5</span>
-                            <h3 class="font-serif font-bold text-2xl text-brand-teal">The Recovery Phase</h3>
-                        </div>
-                        <p class="text-sm text-gray-600 mb-4 pl-11 font-medium">The student is settling, but remains highly vulnerable to being re-triggered.</p>
-                        
-                        <div class="space-y-4 pl-11">
-                            <div>
-                                <div class="bg-gray-100 p-4 rounded-t-xl border border-gray-200 border-b-0">
-                                    <span class="text-gray-500 font-bold block mb-1 text-[10px] uppercase tracking-widest">When you see:</span>
-                                    <span class="text-brand-dark font-medium text-sm">The student begins to calm down...</span>
-                                </div>
-                                <div class="bg-brand-cream p-4 rounded-b-xl border border-brand-gold/30">
-                                    <span class="text-brand-teal font-bold block mb-1 text-[10px] uppercase tracking-widest">The Studio Response:</span>
-                                    <span class="text-brand-dark text-sm">Acknowledge their effort gently, without rushing into discipline <em>("I'm glad you're feeling calmer. Take a few more minutes.")</em>.</span>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="bg-gray-100 p-4 rounded-t-xl border border-gray-200 border-b-0">
-                                    <span class="text-gray-500 font-bold block mb-1 text-[10px] uppercase tracking-widest">When you feel:</span>
-                                    <span class="text-brand-dark font-medium text-sm">It's time to process behavior or assign consequences...</span>
-                                </div>
-                                <div class="bg-brand-cream p-4 rounded-b-xl border border-brand-gold/30">
-                                    <span class="text-brand-teal font-bold block mb-1 text-[10px] uppercase tracking-widest">The Studio Response:</span>
-                                    <span class="text-brand-dark text-sm">Wait at least 20–30 minutes until fully baseline. Logic too soon restarts the crisis cycle.</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Physical Stance Section -->
-                    <div class="mt-12 mb-6 flex items-center justify-center">
-                        <div class="h-px bg-brand-gold/30 flex-grow"></div>
-                        <div class="mx-4 text-brand-gold tracking-[0.3em] uppercase text-[9px] font-bold">Physical Stance</div>
-                        <div class="h-px bg-brand-gold/30 flex-grow"></div>
-                    </div>
-
-                    <div class="bg-brand-dark rounded-2xl shadow-luxury overflow-hidden text-white mb-6">
-                        <div class="px-6 py-5 border-b border-white/10">
-                            <h3 class="font-serif font-bold text-2xl text-brand-gold-light mb-2">The Studio Posture</h3>
-                            <p class="text-sm text-gray-300 leading-relaxed">Body language communicates safety or threat to a dysregulated brain. Memorize these automatic physical responses.</p>
-                        </div>
-                        <div class="p-6 grid gap-4 md:grid-cols-2">
-                            <div class="bg-white/5 p-4 rounded-xl border border-white/10">
-                                <p class="text-[10px] uppercase text-brand-orange font-bold tracking-widest mb-1">When approaching:</p>
-                                <p class="text-sm font-medium">Stay at least 4x your usual distance (~6 feet) away.</p>
-                            </div>
-                            <div class="bg-white/5 p-4 rounded-xl border border-white/10">
-                                <p class="text-[10px] uppercase text-brand-orange font-bold tracking-widest mb-1">When speaking:</p>
-                                <p class="text-sm font-medium">Stand at an angle (the "L-stance") rather than face-to-face.</p>
-                            </div>
-                            <div class="bg-white/5 p-4 rounded-xl border border-white/10">
-                                <p class="text-[10px] uppercase text-brand-orange font-bold tracking-widest mb-1">When they sit:</p>
-                                <p class="text-sm font-medium">Get on their eye level by sitting or crouching.</p>
-                            </div>
-                            <div class="bg-white/5 p-4 rounded-xl border border-white/10">
-                                <p class="text-[10px] uppercase text-brand-orange font-bold tracking-widest mb-1">When directing:</p>
-                                <p class="text-sm font-medium">Keep hands visible. Never point or shake your finger at them.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-        <div id="screen-library" class="screen studio-background">
-            <div class="content-wrapper">
-                <div class="text-center mb-8 pt-4">
-                    <p class="text-xs tracking-[0.2em] font-bold text-brand-gold uppercase mb-2">Liner Notes</p>
-                    <h2 class="font-serif text-4xl font-bold text-brand-teal leading-tight">Module Library</h2>
-                    <p class="text-sm text-gray-600 mt-2">Select a track to build your response.</p>
-                </div>
-                
-                <div id="library-list" class="flex flex-col space-y-4">
-                    <!-- Populated by JS -->
-                </div>
-            </div>
-        </div>
-
-        <!-- ==========================================
-             SCREEN: MODULE DETAILS (The 14 Sections)
-             ========================================== -->
-        <div id="screen-module" class="screen studio-background">
-            <div class="content-wrapper">
-                <!-- Populated by JS to include all 14 required sections -->
-            </div>
-        </div>
-
-        <!-- ==========================================
-             SCREEN: TEACH IT MODE
-             ========================================== -->
-        <div id="screen-teach" class="screen studio-background">
-            <div class="content-wrapper">
-                <!-- Populated by JS -->
-            </div>
-        </div>
-
-        <!-- ==========================================
-             SCREEN: USE IT LIVE (High Contrast / Fast)
-             ========================================== -->
-        <div id="screen-live" class="screen font-live bg-live-bg">
-            <div class="content-wrapper min-h-full flex flex-col pt-8">
-                <!-- Populated by JS -->
-            </div>
-        </div>
-
-        <!-- ==========================================
-             SCREEN: PRACTICE INTRO
-             ========================================== -->
-        <div id="screen-practice-intro" class="screen cursor-pointer relative bg-[#f8f5ef]" onclick="navTo('screen-practice')">
-            <!-- Fixed src with URL encoded spaces (%20) and a fallback onerror to a styled placeholder -->
-            <img src="Lift%20the%20needle%20on%20the%20Scratched%20Record.png" onerror="this.onerror=null; this.src='https://placehold.co/800x1600/f8f5ef/0f5b5b?text=Lift+the+Needle\n(Image+Not+Found)';" class="absolute inset-0 w-full h-full object-contain object-center pointer-events-none" alt="Lift the Needle">
-            
-            <!-- Exit button placed safely in the top left -->
-            <button onclick="navTo('screen-dashboard'); event.stopPropagation();" class="absolute z-20 top-6 left-6 p-4 text-brand-teal bg-white/90 backdrop-blur-md rounded-full shadow-xl hover:bg-brand-teal hover:text-white transition focus:outline-none">
-                <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-            </button>
-
-            <!-- Pulse Hitbox indicating where to tap -->
-            <div class="absolute w-[80%] max-w-[300px] h-[8%] bottom-[10%] left-1/2 transform -translate-x-1/2 rounded-[2rem] pulse-hitbox border-2 border-[#0f5b5b]/30 pointer-events-none"></div>
-        </div>
-
-        <!-- ==========================================
-             SCREEN: PRACTICE MODE
-             ========================================== -->
-        <div id="screen-practice" class="screen studio-background">
-            <div class="content-wrapper">
-                <!-- Populated by JS -->
-            </div>
-        </div>
-
-        <!-- ==========================================
-             SCREEN: REFLECT & REPORT
-             ========================================== -->
-        <div id="screen-reflect" class="screen studio-background">
-            <div class="content-wrapper">
-                <!-- Populated by JS -->
-            </div>
-        </div>
-
-        <!-- ==========================================
-             SCREEN: TEACHER RESET (Breathing)
-             ========================================== -->
-        <div id="screen-reset" class="screen font-live bg-live-bg">
-            <div class="content-wrapper min-h-full flex flex-col justify-center items-center text-center">
-                <!-- Populated by JS -->
-            </div>
-        </div>
-
-    </div> <!-- End screens container -->
+        <!-- Pulse Hitbox — raised to sit around the Press Play button (~80% from top) -->
+        <div class="absolute w-[80%] max-w-[300px] h-[8%] bottom-[18%] left-1/2 transform -translate-x-1/2 rounded-[2rem] pulse-hitbox border-2 border-[#0f5b5b]/30 pointer-events-none z-20"></div>
+    </div>
 
     <!-- ==========================================
-         FIXED BOTTOM NAVIGATION 
+         SCREEN: HOME / DASHBOARD 
          ========================================== -->
-    <nav id="main-nav" class="fixed bottom-0 left-0 w-full bg-white border-t border-brand-gold/20 flex justify-around items-end pt-3 nav-safe-bottom shadow-[0_-5px_20px_rgba(0,0,0,0.05)] z-[100] hidden">
-        
-        <!-- Desktop-only logo (hidden on mobile via CSS) -->
-        <div class="nav-desktop-logo mb-8 px-2">
-            <p class="font-serif text-lg font-bold text-brand-teal leading-tight">R³.A.P.</p>
-            <p class="text-[9px] tracking-[0.18em] font-bold text-brand-gold uppercase">Response Studio</p>
-        </div>
-
-        <button id="nav-btn-studio" data-nav="screen-dashboard" onclick="navTo('screen-dashboard')" class="flex-1 flex flex-col items-center text-gray-400 hover:text-brand-teal transition pb-1">
-            <svg class="w-6 h-6 mb-1 icon-svg" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider whitespace-nowrap">Studio</span>
-        </button>
-        <button id="nav-btn-library" data-nav="screen-library" onclick="navTo('screen-library')" class="flex-1 flex flex-col items-center text-gray-400 hover:text-brand-teal transition pb-1">
-            <svg class="w-6 h-6 mb-1 icon-svg" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
-            <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider whitespace-nowrap">Library</span>
-        </button>
-        <button id="nav-btn-live" data-nav="screen-live" onclick="startLiveState()" class="flex-1 flex flex-col items-center text-brand-orange hover:opacity-80 transition transform -translate-y-2">
-            <div class="nav-live-disc bg-brand-orange text-white p-3 rounded-full shadow-lg border-2 border-white">
-                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+    <div id="screen-dashboard" class="screen studio-background">
+        <div class="content-wrapper">
+            <div class="text-center mb-8 pt-6">
+                <h1 class="font-serif text-3xl font-bold text-brand-teal tracking-wide">R³.A.P. Response Studio</h1>
+                <p class="text-sm text-gray-600 mt-2 max-w-xl mx-auto">A teacher-facing response system that reduces improvisation in high-stress classroom moments.</p>
+                <div class="luxury-divider mt-4">
+                    <span class="text-[9px] tracking-[0.2em] font-bold text-brand-teal uppercase">Master Your Freestyle</span>
+                </div>
             </div>
-            <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider mt-1 whitespace-nowrap">Live</span>
+
+            <!-- Start Here Flow -->
+            <div class="mb-6">
+                <p class="text-[9px] tracking-[0.18em] font-bold text-brand-gold uppercase mb-3">Start Here — Your Flow</p>
+                <div class="grid grid-cols-4 gap-2">
+                    <button onclick="navTo('screen-library')" class="bg-white border border-brand-gold/30 rounded-xl p-3 text-center hover:border-brand-teal hover:shadow-sm transition">
+                        <p class="font-serif font-bold text-brand-teal text-base leading-none mb-1">01</p>
+                        <p class="text-[9px] font-bold uppercase tracking-wider text-gray-500">Library</p>
+                        <p class="text-[8px] text-gray-400 mt-0.5 leading-tight">Learn the<br>routine</p>
+                    </button>
+                    <button onclick="navTo('screen-practice-intro')" class="bg-white border border-brand-gold/30 rounded-xl p-3 text-center hover:border-brand-teal hover:shadow-sm transition">
+                        <p class="font-serif font-bold text-brand-teal text-base leading-none mb-1">02</p>
+                        <p class="text-[9px] font-bold uppercase tracking-wider text-gray-500">Practice</p>
+                        <p class="text-[8px] text-gray-400 mt-0.5 leading-tight">Rehearse<br>the script</p>
+                    </button>
+                    <button onclick="startLiveState()" class="bg-brand-orange/10 border border-brand-orange/30 rounded-xl p-3 text-center hover:border-brand-orange hover:shadow-sm transition">
+                        <p class="font-serif font-bold text-brand-orange text-base leading-none mb-1">03</p>
+                        <p class="text-[9px] font-bold uppercase tracking-wider text-brand-orange">Live</p>
+                        <p class="text-[8px] text-gray-400 mt-0.5 leading-tight">Deploy<br>in class</p>
+                    </button>
+                    <button onclick="navTo('screen-reflect')" class="bg-white border border-brand-gold/30 rounded-xl p-3 text-center hover:border-brand-teal hover:shadow-sm transition">
+                        <p class="font-serif font-bold text-brand-teal text-base leading-none mb-1">04</p>
+                        <p class="text-[9px] font-bold uppercase tracking-wider text-gray-500">Track</p>
+                        <p class="text-[8px] text-gray-400 mt-0.5 leading-tight">Reflect<br>& export</p>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Status Bar -->
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-brand-gold/30 mb-6 flex justify-between items-center text-sm font-medium text-brand-dark">
+                <button onclick="showNotification('Grade Band settings coming in the next release.')" class="flex items-center hover:text-brand-teal transition group">
+                    <span class="w-2 h-2 rounded-full bg-brand-teal mr-2"></span>
+                    Grade Band: K-8
+                    <svg class="w-3 h-3 ml-1 text-brand-gold opacity-60 group-hover:opacity-100 transition" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                </button>
+                <button onclick="showNotification('Studio mode settings coming in the next release.')" class="text-brand-gold hover:opacity-70 transition flex items-center gap-1">
+                    Status: Studio Active
+                    <svg class="w-3 h-3 opacity-60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                </button>
+            </div>
+
+            <!-- The Studio Toolkit Banner -->
+            <div class="mb-4">
+                <button onclick="navTo('screen-toolkit')" class="w-full bg-brand-dark text-white rounded-2xl p-6 shadow-luxury flex items-center justify-between group hover:bg-gray-800 transition text-left">
+                    <div>
+                        <p class="text-xs text-brand-gold uppercase tracking-widest font-bold mb-1">The Studio Toolkit</p>
+                        <h3 class="font-serif text-2xl font-bold">5 Stages of Escalation</h3>
+                    </div>
+                    <div class="bg-white/10 p-3 rounded-full group-hover:scale-110 transition">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Dashboard Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <button onclick="startLiveState()" class="bg-gradient-to-r from-brand-orange to-[#e56a17] text-white rounded-2xl p-6 shadow-luxury flex items-center justify-between group hover:opacity-95 transition text-left">
+                    <div>
+                        <h3 class="font-serif text-2xl font-bold mb-1">Use It Live</h3>
+                        <p class="text-xs text-white/80 uppercase tracking-wider font-bold">Select a Script</p>
+                    </div>
+                    <div class="bg-white/20 p-3 rounded-full group-hover:scale-110 transition"><svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+                </button>
+
+                <button onclick="navTo('screen-library')" class="bg-white border border-brand-gold/30 rounded-2xl p-6 shadow-luxury flex items-center justify-between group hover:border-brand-teal transition text-left">
+                    <div>
+                        <h3 class="font-serif text-xl font-bold text-brand-teal mb-1">Module Library</h3>
+                        <p class="text-xs text-gray-500 uppercase tracking-wider font-bold">Teach a Routine</p>
+                    </div>
+                    <div class="text-brand-teal bg-brand-cream p-3 rounded-full"><svg class="w-5 h-5 icon-svg" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg></div>
+                </button>
+
+                <!-- Navigates to Intro Image before Practice -->
+                <button onclick="navTo('screen-practice-intro')" class="bg-white border border-brand-gold/30 rounded-2xl p-6 shadow-luxury flex items-center justify-between group hover:border-brand-teal transition text-left">
+                    <div>
+                        <h3 class="font-serif text-xl font-bold text-brand-teal mb-1">Practice Scenarios</h3>
+                        <p class="text-xs text-gray-500 uppercase tracking-wider font-bold">Rehearse</p>
+                    </div>
+                    <div class="text-brand-teal bg-brand-cream p-3 rounded-full"><svg class="w-5 h-5 icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div>
+                </button>
+
+                <button onclick="navTo('screen-reflect')" class="bg-white border border-brand-gold/30 rounded-2xl p-6 shadow-luxury flex items-center justify-between group hover:border-brand-teal transition text-left">
+                    <div>
+                        <h3 class="font-serif text-xl font-bold text-brand-teal mb-1">Track & Reflect</h3>
+                        <p class="text-xs text-gray-500 uppercase tracking-wider font-bold">Export PDF Report</p>
+                    </div>
+                    <div class="text-brand-teal bg-brand-cream p-3 rounded-full"><svg class="w-5 h-5 icon-svg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg></div>
+                </button>
+
+                <!-- Teacher Regulation — full width, always accessible -->
+                <button onclick="navTo('screen-reset')" class="md:col-span-2 bg-brand-teal text-white rounded-2xl p-5 shadow-luxury flex items-center justify-between group hover:bg-brand-teal-light transition text-left">
+                    <div>
+                        <p class="text-[9px] font-bold uppercase tracking-widest text-brand-gold mb-0.5">R¹ · R² · R³</p>
+                        <h3 class="font-serif text-xl font-bold mb-0.5">Teacher Regulation</h3>
+                        <p class="text-xs text-white/70 uppercase tracking-wider font-bold">Breathe · Reflect · Resist · Reveal</p>
+                    </div>
+                    <div class="bg-white/15 p-3 rounded-full group-hover:scale-110 transition flex-shrink-0">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         SCREEN: THE STUDIO TOOLKIT
+         ========================================== -->
+    <div id="screen-toolkit" class="screen studio-background">
+        <div class="content-wrapper">
+            <button onclick="navTo('screen-dashboard')" class="flex items-center text-brand-teal mb-6 font-medium hover:opacity-80 transition">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                <span class="ml-2">Back to Studio</span>
+            </button>
+            
+            <div class="text-center mb-10">
+                <p class="text-xs tracking-[0.2em] font-bold text-brand-gold uppercase mb-2">The Studio Toolkit</p>
+                <h2 class="font-serif text-3xl md:text-4xl font-bold text-brand-teal leading-tight mb-6">De-Escalation Stages</h2>
+                
+                <div class="bg-brand-dark rounded-xl p-5 md:p-6 text-left shadow-luxury border border-brand-gold/20">
+                    <p class="text-sm md:text-base text-brand-gold-light italic font-medium">"Because a dysregulated adult cannot help regulate a child, teachers need automatic, predictable responses."</p>
+                    <p class="text-xs text-white/70 mt-3 leading-relaxed">Master the 5 stages of a behavioral crisis so you never have to improvise when the volume goes up.</p>
+                </div>
+            </div>
+
+            <div class="space-y-8">
+                
+                <!-- Phase 1 -->
+                <div>
+                    <div class="flex items-center mb-4">
+                        <span class="bg-brand-teal text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-3 flex-shrink-0 shadow-md">1</span>
+                        <h3 class="font-serif font-bold text-2xl text-brand-teal">The Trigger Phase</h3>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-4 pl-11 font-medium">Students send subtle warning signals that they are becoming overwhelmed, such as sighing, clenching fists, or lingering.</p>
+                    
+                    <div class="space-y-4 pl-11">
+                        <div>
+                            <div class="bg-gray-100 p-4 rounded-t-xl border border-gray-200 border-b-0">
+                                <span class="text-gray-500 font-bold block mb-1 text-[10px] uppercase tracking-widest">When you see:</span>
+                                <span class="text-brand-dark font-medium text-sm">A student showing early signs of frustration or refusing to transition...</span>
+                            </div>
+                            <div class="bg-brand-cream p-4 rounded-b-xl border border-brand-gold/30">
+                                <span class="text-brand-teal font-bold block mb-1 text-[10px] uppercase tracking-widest">The Studio Response:</span>
+                                <span class="text-brand-dark text-sm">Intervene early and low-key. Acknowledge the challenge and offer a brief regulation break <em>(e.g., "I can see it's hard to switch gears. Take a minute to get a drink of water, then we'll get started.")</em></span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="bg-gray-100 p-4 rounded-t-xl border border-gray-200 border-b-0">
+                                <span class="text-gray-500 font-bold block mb-1 text-[10px] uppercase tracking-widest">When you see:</span>
+                                <span class="text-brand-dark font-medium text-sm">Minor, low-level disruptions (tapping, whispering)...</span>
+                            </div>
+                            <div class="bg-brand-cream p-4 rounded-b-xl border border-brand-gold/30">
+                                <span class="text-brand-teal font-bold block mb-1 text-[10px] uppercase tracking-widest">The Studio Response:</span>
+                                <span class="text-brand-dark text-sm">Use "strategic ignoring" for behaviors that don't impact safety, or use proximity (standing near the student) to redirect them without a verbal reprimand.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 2 -->
+                <div>
+                    <div class="flex items-center mb-4">
+                        <span class="bg-brand-teal text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-3 flex-shrink-0 shadow-md">2</span>
+                        <h3 class="font-serif font-bold text-2xl text-brand-teal">The Agitation Phase</h3>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-4 pl-11 font-medium">If the trigger isn't addressed, the student may push back, argue slightly, or slam materials.</p>
+                    
+                    <div class="space-y-4 pl-11">
+                        <div>
+                            <div class="bg-gray-100 p-4 rounded-t-xl border border-gray-200 border-b-0">
+                                <span class="text-gray-500 font-bold block mb-1 text-[10px] uppercase tracking-widest">When you see:</span>
+                                <span class="text-brand-dark font-medium text-sm">A student begins to argue or challenge your authority...</span>
+                            </div>
+                            <div class="bg-brand-cream p-4 rounded-b-xl border border-brand-gold/30">
+                                <span class="text-brand-teal font-bold block mb-1 text-[10px] uppercase tracking-widest">The Studio Response:</span>
+                                <span class="text-brand-dark text-sm">Drop your volume, slow your pace, and completely avoid power struggles.</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="bg-gray-100 p-4 rounded-t-xl border border-gray-200 border-b-0">
+                                <span class="text-gray-500 font-bold block mb-1 text-[10px] uppercase tracking-widest">When you see:</span>
+                                <span class="text-brand-dark font-medium text-sm">The student expressing anger or defiance...</span>
+                            </div>
+                            <div class="bg-brand-cream p-4 rounded-b-xl border border-brand-gold/30">
+                                <span class="text-brand-teal font-bold block mb-1 text-[10px] uppercase tracking-widest">The Studio Response:</span>
+                                <span class="text-brand-dark text-sm">Validate feelings without validating the behavior. Use empathy <em>("I see you're frustrated")</em> and offer 2-3 acceptable choices <em>("You can complete this independently or with a partner. Which do you prefer?")</em>.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 3 -->
+                <div>
+                    <div class="flex items-center mb-4">
+                        <span class="bg-[#e56a17] text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-3 flex-shrink-0 shadow-md">3</span>
+                        <h3 class="font-serif font-bold text-2xl text-[#e56a17]">The Acceleration Phase</h3>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-4 pl-11 font-medium">The student becomes louder, paces, or blatantly refuses. Reasoning is no longer effective.</p>
+                    
+                    <div class="space-y-4 pl-11">
+                        <div>
+                            <div class="bg-orange-50 p-4 rounded-t-xl border border-orange-100 border-b-0">
+                                <span class="text-brand-orange font-bold block mb-1 text-[10px] uppercase tracking-widest">When you see:</span>
+                                <span class="text-brand-dark font-medium text-sm">The student is highly agitated and raising their voice...</span>
+                            </div>
+                            <div class="bg-brand-cream p-4 rounded-b-xl border border-brand-gold/30">
+                                <span class="text-brand-teal font-bold block mb-1 text-[10px] uppercase tracking-widest">The Studio Response:</span>
+                                <span class="text-brand-dark text-sm">Use significantly fewer words and maintain a calm, monotonous tone. Do not ask "Why?" questions or deliver lectures.</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="bg-orange-50 p-4 rounded-t-xl border border-orange-100 border-b-0">
+                                <span class="text-brand-orange font-bold block mb-1 text-[10px] uppercase tracking-widest">When you see:</span>
+                                <span class="text-brand-dark font-medium text-sm">Verbal directions are causing more pushback...</span>
+                            </div>
+                            <div class="bg-brand-cream p-4 rounded-b-xl border border-brand-gold/30">
+                                <span class="text-brand-teal font-bold block mb-1 text-[10px] uppercase tracking-widest">The Studio Response:</span>
+                                <span class="text-brand-dark text-sm">Lean on non-verbal cues. Quietly point to a "Take a Break" card or gesture toward a calm space to reduce cognitive demand.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 4 -->
+                <div>
+                    <div class="flex items-center mb-4">
+                        <span class="bg-red-700 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-3 flex-shrink-0 shadow-md">4</span>
+                        <h3 class="font-serif font-bold text-2xl text-red-700">The Crisis Phase</h3>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-4 pl-11 font-medium">Peak escalation. Unsafe behavior or extreme disruption. Safety is the only priority.</p>
+                    
+                    <div class="space-y-4 pl-11">
+                        <div>
+                            <div class="bg-red-50 p-4 rounded-t-xl border border-red-100 border-b-0">
+                                <span class="text-red-700 font-bold block mb-1 text-[10px] uppercase tracking-widest">When you see:</span>
+                                <span class="text-brand-dark font-medium text-sm">The student becomes unsafe or highly disruptive...</span>
+                            </div>
+                            <div class="bg-brand-cream p-4 rounded-b-xl border border-brand-gold/30">
+                                <span class="text-brand-teal font-bold block mb-1 text-[10px] uppercase tracking-widest">The Studio Response:</span>
+                                <span class="text-brand-dark text-sm">Stop teaching. Follow district safety protocols (call an admin, give space, or escort others out).</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="bg-red-50 p-4 rounded-t-xl border border-red-100 border-b-0">
+                                <span class="text-red-700 font-bold block mb-1 text-[10px] uppercase tracking-widest">When you see:</span>
+                                <span class="text-brand-dark font-medium text-sm">You must interact during the crisis...</span>
+                            </div>
+                            <div class="bg-brand-cream p-4 rounded-b-xl border border-brand-gold/30">
+                                <span class="text-brand-teal font-bold block mb-1 text-[10px] uppercase tracking-widest">The Studio Response:</span>
+                                <span class="text-brand-dark text-sm">Use the absolute minimum number of words possible <em>(e.g., "I am here when you are ready")</em>.</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="bg-red-50 p-4 rounded-t-xl border border-red-100 border-b-0">
+                                <span class="text-red-700 font-bold block mb-1 text-[10px] uppercase tracking-widest">When you feel:</span>
+                                <span class="text-brand-dark font-medium text-sm">Your own heart racing and anxiety rising...</span>
+                            </div>
+                            <div class="bg-brand-cream p-4 rounded-b-xl border border-brand-gold/30">
+                                <span class="text-brand-teal font-bold block mb-1 text-[10px] uppercase tracking-widest">The Studio Response:</span>
+                                <span class="text-brand-dark text-sm">Step back and take 3 deep breaths. Your panic will only escalate their aggression.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 5 -->
+                <div>
+                    <div class="flex items-center mb-4">
+                        <span class="bg-brand-teal text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-3 flex-shrink-0 shadow-md">5</span>
+                        <h3 class="font-serif font-bold text-2xl text-brand-teal">The Recovery Phase</h3>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-4 pl-11 font-medium">The student is settling, but remains highly vulnerable to being re-triggered.</p>
+                    
+                    <div class="space-y-4 pl-11">
+                        <div>
+                            <div class="bg-gray-100 p-4 rounded-t-xl border border-gray-200 border-b-0">
+                                <span class="text-gray-500 font-bold block mb-1 text-[10px] uppercase tracking-widest">When you see:</span>
+                                <span class="text-brand-dark font-medium text-sm">The student begins to calm down...</span>
+                            </div>
+                            <div class="bg-brand-cream p-4 rounded-b-xl border border-brand-gold/30">
+                                <span class="text-brand-teal font-bold block mb-1 text-[10px] uppercase tracking-widest">The Studio Response:</span>
+                                <span class="text-brand-dark text-sm">Acknowledge their effort gently, without rushing into discipline <em>("I'm glad you're feeling calmer. Take a few more minutes.")</em>.</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="bg-gray-100 p-4 rounded-t-xl border border-gray-200 border-b-0">
+                                <span class="text-gray-500 font-bold block mb-1 text-[10px] uppercase tracking-widest">When you feel:</span>
+                                <span class="text-brand-dark font-medium text-sm">It's time to process behavior or assign consequences...</span>
+                            </div>
+                            <div class="bg-brand-cream p-4 rounded-b-xl border border-brand-gold/30">
+                                <span class="text-brand-teal font-bold block mb-1 text-[10px] uppercase tracking-widest">The Studio Response:</span>
+                                <span class="text-brand-dark text-sm">Wait at least 20–30 minutes until fully baseline. Logic too soon restarts the crisis cycle.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Physical Stance Section -->
+                <div class="mt-12 mb-6 flex items-center justify-center">
+                    <div class="h-px bg-brand-gold/30 flex-grow"></div>
+                    <div class="mx-4 text-brand-gold tracking-[0.3em] uppercase text-[9px] font-bold">Physical Stance</div>
+                    <div class="h-px bg-brand-gold/30 flex-grow"></div>
+                </div>
+
+                <div class="bg-brand-dark rounded-2xl shadow-luxury overflow-hidden text-white mb-6">
+                    <div class="px-6 py-5 border-b border-white/10">
+                        <h3 class="font-serif font-bold text-2xl text-brand-gold-light mb-2">The Studio Posture</h3>
+                        <p class="text-sm text-gray-300 leading-relaxed">Body language communicates safety or threat to a dysregulated brain. Memorize these automatic physical responses.</p>
+                    </div>
+                    <div class="p-6 grid gap-4 md:grid-cols-2">
+                        <div class="bg-white/5 p-4 rounded-xl border border-white/10">
+                            <p class="text-[10px] uppercase text-brand-orange font-bold tracking-widest mb-1">When approaching:</p>
+                            <p class="text-sm font-medium">Stay at least 4x your usual distance (~6 feet) away.</p>
+                        </div>
+                        <div class="bg-white/5 p-4 rounded-xl border border-white/10">
+                            <p class="text-[10px] uppercase text-brand-orange font-bold tracking-widest mb-1">When speaking:</p>
+                            <p class="text-sm font-medium">Stand at an angle (the "L-stance") rather than face-to-face.</p>
+                        </div>
+                        <div class="bg-white/5 p-4 rounded-xl border border-white/10">
+                            <p class="text-[10px] uppercase text-brand-orange font-bold tracking-widest mb-1">When they sit:</p>
+                            <p class="text-sm font-medium">Get on their eye level by sitting or crouching.</p>
+                        </div>
+                        <div class="bg-white/5 p-4 rounded-xl border border-white/10">
+                            <p class="text-[10px] uppercase text-brand-orange font-bold tracking-widest mb-1">When directing:</p>
+                            <p class="text-sm font-medium">Keep hands visible. Never point or shake your finger at them.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-library" class="screen studio-background">
+        <div class="content-wrapper">
+            <div class="text-center mb-8 pt-4">
+                <p class="text-xs tracking-[0.2em] font-bold text-brand-gold uppercase mb-2">Liner Notes</p>
+                <h2 class="font-serif text-4xl font-bold text-brand-teal leading-tight">Module Library</h2>
+                <p class="text-sm text-gray-600 mt-2">Select a track to build your response.</p>
+            </div>
+            
+            <div id="library-list" class="flex flex-col space-y-4">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         SCREEN: MODULE DETAILS (The 14 Sections)
+         ========================================== -->
+    <div id="screen-module" class="screen studio-background">
+        <div class="content-wrapper">
+            <!-- Populated by JS to include all 14 required sections -->
+        </div>
+    </div>
+
+    <!-- ==========================================
+         SCREEN: TEACH IT MODE
+         ========================================== -->
+    <div id="screen-teach" class="screen studio-background">
+        <div class="content-wrapper">
+            <!-- Populated by JS -->
+        </div>
+    </div>
+
+    <!-- ==========================================
+         SCREEN: USE IT LIVE (High Contrast / Fast)
+         ========================================== -->
+    <div id="screen-live" class="screen font-live bg-live-bg">
+        <div class="content-wrapper min-h-full flex flex-col pt-8">
+            <!-- Populated by JS -->
+        </div>
+    </div>
+
+    <!-- ==========================================
+         SCREEN: PRACTICE INTRO
+         ========================================== -->
+    <div id="screen-practice-intro" class="screen cursor-pointer relative bg-[#f8f5ef]" onclick="navTo('screen-practice')">
+        <!-- Fixed src with URL encoded spaces (%20) and a fallback onerror to a styled placeholder -->
+        <img src="Lift%20the%20needle%20on%20the%20Scratched%20Record.png" onerror="this.onerror=null; this.src='https://placehold.co/800x1600/f8f5ef/0f5b5b?text=Lift+the+Needle\n(Image+Not+Found)';" class="absolute inset-0 w-full h-full object-contain object-center pointer-events-none" alt="Lift the Needle">
+        
+        <!-- Exit button placed safely in the top left -->
+        <button onclick="navTo('screen-dashboard'); event.stopPropagation();" class="absolute z-20 top-6 left-6 p-4 text-brand-teal bg-white/90 backdrop-blur-md rounded-full shadow-xl hover:bg-brand-teal hover:text-white transition focus:outline-none">
+            <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
         </button>
-        <button id="nav-btn-practice" data-nav="screen-practice" onclick="navTo('screen-practice-intro')" class="flex-1 flex flex-col items-center text-gray-400 hover:text-brand-teal transition pb-1">
-            <svg class="w-6 h-6 mb-1 icon-svg" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider whitespace-nowrap">Practice</span>
-        </button>
-        <button id="nav-btn-track" data-nav="screen-reflect" onclick="navTo('screen-reflect')" class="flex-1 flex flex-col items-center text-gray-400 hover:text-brand-teal transition pb-1">
-            <svg class="w-6 h-6 mb-1 icon-svg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
-            <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider whitespace-nowrap">Track</span>
-        </button>
-    </nav>
+
+        <!-- Pulse Hitbox indicating where to tap -->
+        <div class="absolute w-[80%] max-w-[300px] h-[8%] bottom-[10%] left-1/2 transform -translate-x-1/2 rounded-[2rem] pulse-hitbox border-2 border-[#0f5b5b]/30 pointer-events-none"></div>
+    </div>
+
+    <!-- ==========================================
+         SCREEN: PRACTICE MODE
+         ========================================== -->
+    <div id="screen-practice" class="screen studio-background">
+        <div class="content-wrapper">
+            <!-- Populated by JS -->
+        </div>
+    </div>
+
+    <!-- ==========================================
+         SCREEN: REFLECT & REPORT
+         ========================================== -->
+    <div id="screen-reflect" class="screen studio-background">
+        <div class="content-wrapper">
+            <!-- Populated by JS -->
+        </div>
+    </div>
+
+    <!-- ==========================================
+         SCREEN: TEACHER RESET (Breathing)
+         ========================================== -->
+    <div id="screen-reset" class="screen font-live bg-live-bg">
+        <div class="content-wrapper min-h-full flex flex-col justify-center items-center text-center">
+            <!-- Populated by JS -->
+        </div>
+    </div>
+
+</div> <!-- End screens container -->
+
+<!-- Persistent Teacher Regulate Button (shown on all non-splash screens) -->
+<button id="regulate-btn" onclick="navTo('screen-reset')" style="display:none;">
+    <span class="reg-dot"></span>
+    Regulate
+</button>
+
+<!-- ==========================================
+     FIXED BOTTOM NAVIGATION 
+     ========================================== -->
+<nav id="main-nav" class="fixed bottom-0 left-0 w-full bg-white border-t border-brand-gold/20 flex justify-around items-end pt-3 nav-safe-bottom shadow-[0_-5px_20px_rgba(0,0,0,0.05)] z-[100] hidden">
+    
+    <!-- Desktop-only logo (hidden on mobile via CSS) -->
+    <div class="nav-desktop-logo mb-8 px-2">
+        <p class="font-serif text-lg font-bold text-brand-teal leading-tight">R³.A.P.</p>
+        <p class="text-[9px] tracking-[0.18em] font-bold text-brand-gold uppercase">Response Studio</p>
+    </div>
+
+    <button id="nav-btn-studio" data-nav="screen-dashboard" onclick="navTo('screen-dashboard')" class="flex-1 flex flex-col items-center text-gray-400 hover:text-brand-teal transition pb-1">
+        <svg class="w-6 h-6 mb-1 icon-svg" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider whitespace-nowrap">Studio</span>
+    </button>
+    <button id="nav-btn-library" data-nav="screen-library" onclick="navTo('screen-library')" class="flex-1 flex flex-col items-center text-gray-400 hover:text-brand-teal transition pb-1">
+        <svg class="w-6 h-6 mb-1 icon-svg" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+        <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider whitespace-nowrap">Library</span>
+    </button>
+    <button id="nav-btn-live" data-nav="screen-live" onclick="startLiveState()" class="flex-1 flex flex-col items-center text-brand-orange hover:opacity-80 transition transform -translate-y-2">
+        <div class="nav-live-disc bg-brand-orange text-white p-3 rounded-full shadow-lg border-2 border-white">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider mt-1 whitespace-nowrap">Live</span>
+    </button>
+    <button id="nav-btn-practice" data-nav="screen-practice" onclick="navTo('screen-practice-intro')" class="flex-1 flex flex-col items-center text-gray-400 hover:text-brand-teal transition pb-1">
+        <svg class="w-6 h-6 mb-1 icon-svg" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider whitespace-nowrap">Practice</span>
+    </button>
+    <button id="nav-btn-track" data-nav="screen-reflect" onclick="navTo('screen-reflect')" class="flex-1 flex flex-col items-center text-gray-400 hover:text-brand-teal transition pb-1">
+        <svg class="w-6 h-6 mb-1 icon-svg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+        <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider whitespace-nowrap">Track</span>
+    </button>
+</nav>
+```
 
 </div>
 
 <!-- APPLICATION LOGIC & DATA ENGINE -->
+
 <script>
     // System utility to display custom alerts instead of the browser native alert()
     function showNotification(message) {
@@ -820,9 +886,12 @@
         if (screenId === 'screen-splash' || screenId === 'screen-practice-intro') {
             bottomNav.style.display = 'none';
             scrollContainer.style.paddingBottom = '0px';
+            document.getElementById('regulate-btn').style.display = 'none';
         } else {
             bottomNav.style.display = 'flex';
             scrollContainer.style.paddingBottom = '80px';
+            // Show regulate button on all content screens except the reset screen itself
+            document.getElementById('regulate-btn').style.display = screenId === 'screen-reset' ? 'none' : 'flex';
         }
 
         // Update active nav button highlight
@@ -1238,62 +1307,122 @@
                     <div>
                         <label class="block text-sm font-bold text-brand-dark mb-2">What happened? (The Moment)</label>
                         <textarea class="w-full border border-gray-200 rounded-xl p-4 text-base outline-none focus:border-brand-teal focus:ring-1 focus:ring-brand-teal transition" rows="3" placeholder="Briefly describe the classroom moment..."></textarea>
-                    </div>
-                    
-                    <div class="grid md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-bold text-brand-dark mb-2">Script Used</label>
-                            <select class="w-full border border-gray-200 rounded-xl p-4 text-base outline-none bg-white">
-                                <option>Reminder</option><option>Redirect</option><option>Follow-through</option><option>Repair</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-bold text-brand-dark mb-2">What Worked?</label>
-                            <input type="text" class="w-full border border-gray-200 rounded-xl p-4 text-base outline-none focus:border-brand-teal transition" placeholder="e.g. Lowered volume">
-                        </div>
-                    </div>
 
+```
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-6">
                     <div>
-                        <label class="block text-sm font-bold text-brand-dark mb-2">Next Step / Support Needed</label>
-                        <textarea class="w-full border border-gray-200 rounded-xl p-4 text-base outline-none focus:border-brand-teal transition" rows="3" placeholder="Do we need to repair? Adjust the routine?"></textarea>
+                        <label class="block text-sm font-bold text-brand-dark mb-2">Script Used</label>
+                        <select class="w-full border border-gray-200 rounded-xl p-4 text-base outline-none bg-white">
+                            <option>Reminder</option><option>Redirect</option><option>Follow-through</option><option>Repair</option>
+                        </select>
                     </div>
-
-                    <div class="pt-6 mt-6 border-t border-gray-100 flex justify-end hidden-print">
-                        <button type="submit" class="btn-luxury py-4 px-8 rounded-xl font-bold text-lg shadow-md">Export PDF Report</button>
-                    </div>
-                </form>
-            </div>
-            <style>@media print { body{background:white;} #screens-container{overflow:visible;} .hidden-print{display:none;} .shadow-luxury{box-shadow:none; border:1px solid #eee;} }</style>
-        `;
-    }
-
-    function renderReset() {
-        const container = document.querySelector('#screen-reset .content-wrapper');
-        container.innerHTML = `
-            <div class="w-full max-w-md mx-auto text-center flex flex-col items-center justify-center min-h-[70vh]">
-                <h2 class="text-sm font-bold uppercase tracking-widest text-brand-teal mb-12">Teacher Reset</h2>
-                
-                <div class="breathing-circle mb-12 relative shadow-lg">
-                    <div class="absolute text-brand-teal/40 w-10 h-10">
-                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+                    <div>
+                        <label class="block text-sm font-bold text-brand-dark mb-2">What Worked?</label>
+                        <input type="text" class="w-full border border-gray-200 rounded-xl p-4 text-base outline-none focus:border-brand-teal transition" placeholder="e.g. Lowered volume">
                     </div>
                 </div>
-                
-                <p class="font-serif text-4xl font-bold text-brand-dark mb-4">Pause.</p>
-                <p class="text-gray-600 text-lg font-medium mb-12 leading-loose">Lower your volume.<br>Reduce your words.<br>Return to the routine.</p>
-                
-                <div class="bg-white rounded-2xl p-6 md:p-8 w-full shadow-xl border border-gray-200 mb-10">
-                    <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Self-Talk Anchor</p>
-                    <p class="font-serif text-2xl font-bold text-brand-teal leading-snug">"One expected action. One anchor. Then monitor."</p>
-                </div>
-                
-                <button onclick="navTo('screen-dashboard')" class="text-gray-500 font-bold text-base uppercase tracking-wider underline decoration-gray-300 underline-offset-8 hover:text-brand-dark transition">Return to Studio</button>
-            </div>
-        `;
-    }
 
-    // Initialize App
-    navTo('screen-splash');
+                <div>
+                    <label class="block text-sm font-bold text-brand-dark mb-2">Next Step / Support Needed</label>
+                    <textarea class="w-full border border-gray-200 rounded-xl p-4 text-base outline-none focus:border-brand-teal transition" rows="3" placeholder="Do we need to repair? Adjust the routine?"></textarea>
+                </div>
+
+                <div class="pt-6 mt-6 border-t border-gray-100 flex justify-end hidden-print">
+                    <button type="submit" class="btn-luxury py-4 px-8 rounded-xl font-bold text-lg shadow-md">Export PDF Report</button>
+                </div>
+            </form>
+        </div>
+        <style>@media print { body{background:white;} #screens-container{overflow:visible;} .hidden-print{display:none;} .shadow-luxury{box-shadow:none; border:1px solid #eee;} }</style>
+    `;
+}
+
+function renderReset() {
+    const container = document.querySelector('#screen-reset .content-wrapper');
+    container.innerHTML = `
+        <div class="w-full max-w-md mx-auto flex flex-col items-center pt-8 pb-12">
+            
+            <!-- Header -->
+            <div class="text-center mb-6">
+                <p class="text-[9px] tracking-[0.2em] font-bold text-brand-gold uppercase mb-1">R³ Agency Practice</p>
+                <h2 class="font-serif text-2xl font-bold text-brand-teal">Teacher Regulation</h2>
+                <p class="text-xs text-gray-500 mt-1">A dysregulated adult cannot regulate a child. Start here.</p>
+            </div>
+
+            <!-- Breathing Circle -->
+            <div class="breathing-circle mb-6 relative shadow-lg flex-shrink-0">
+                <div class="text-center pointer-events-none">
+                    <p class="font-serif text-brand-teal text-base font-bold leading-none">Breathe</p>
+                    <p class="text-[9px] text-brand-teal/60 uppercase tracking-widest mt-1">in · out</p>
+                </div>
+            </div>
+
+            <p class="font-serif text-3xl font-bold text-brand-dark mb-2 text-center">Pause.</p>
+            <p class="text-gray-500 text-sm text-center mb-8 leading-relaxed">Lower your volume. Reduce your words.<br>Return to the routine.</p>
+
+            <!-- R³ Steps — each R grounded in regulation -->
+            <div class="w-full space-y-3 mb-8">
+
+                <div class="r3-step bg-white rounded-2xl p-5 border border-brand-gold/30 shadow-sm">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-brand-teal flex items-center justify-center shadow-md">
+                            <span class="font-serif font-bold text-white text-sm">R¹</span>
+                        </div>
+                        <div>
+                            <p class="text-[9px] font-bold uppercase tracking-widest text-brand-gold mb-0.5">Reflect</p>
+                            <p class="font-serif font-bold text-brand-teal text-base mb-1">What am I feeling right now?</p>
+                            <p class="text-xs text-gray-500 leading-relaxed">Name the emotion before you respond. Naming it lowers its power over your next move.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="r3-step bg-white rounded-2xl p-5 border border-brand-gold/30 shadow-sm">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-brand-orange flex items-center justify-center shadow-md">
+                            <span class="font-serif font-bold text-white text-sm">R²</span>
+                        </div>
+                        <div>
+                            <p class="text-[9px] font-bold uppercase tracking-widest text-brand-gold mb-0.5">Resist</p>
+                            <p class="font-serif font-bold text-brand-teal text-base mb-1">Don't take the bait.</p>
+                            <p class="text-xs text-gray-500 leading-relaxed">Resist the urge to argue, explain, or win. Your calm IS the intervention. Return to the script.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="r3-step bg-white rounded-2xl p-5 border border-brand-gold/30 shadow-sm">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-brand-teal-light flex items-center justify-center shadow-md">
+                            <span class="font-serif font-bold text-white text-sm">R³</span>
+                        </div>
+                        <div>
+                            <p class="text-[9px] font-bold uppercase tracking-widest text-brand-gold mb-0.5">Reveal</p>
+                            <p class="font-serif font-bold text-brand-teal text-base mb-1">What does this student need?</p>
+                            <p class="text-xs text-gray-500 leading-relaxed">Shift from reaction to response. When you're steady, you can see what the moment actually requires.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Anchor quote -->
+            <div class="w-full bg-brand-dark rounded-2xl p-5 mb-8 border border-brand-gold/20 text-center">
+                <p class="text-[9px] font-bold text-brand-gold uppercase tracking-widest mb-2">Self-Talk Anchor</p>
+                <p class="font-serif text-lg font-bold text-white leading-snug">"One expected action. One anchor. Then monitor."</p>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="w-full space-y-3">
+                <button onclick="startLiveState()" class="w-full btn-luxury py-4 rounded-xl font-bold text-base">I'm Ready — Use It Live</button>
+                <button onclick="navTo('screen-dashboard')" class="w-full bg-white text-brand-teal py-4 rounded-xl font-bold text-base border border-brand-gold/30 hover:bg-brand-cream transition">Return to Studio</button>
+            </div>
+        </div>
+    `;
+}
+
+// Initialize App
+navTo('screen-splash');
+```
+
 </script>
 
 </body>
